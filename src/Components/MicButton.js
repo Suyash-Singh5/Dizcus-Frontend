@@ -10,7 +10,7 @@ export const MicButton = (props) => {
     ButtonLogo = <img src={MicOff} alt="" width="55%" height="75%" />;
     ButtonText = <p className="buttonText">Mic On</p>;
   } else {
-    ButtonLogo = <img src={MicOn} alt="On" width="35px" height="40px" />;
+    ButtonLogo = <img src={MicOn} alt="On" width="55%" height="75%" />;
     ButtonText = <p className="buttonText">Mic Off</p>;
   }
   return (

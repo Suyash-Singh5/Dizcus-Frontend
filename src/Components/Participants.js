@@ -11,15 +11,14 @@ const Participants = (props) => {
         <button
           onClick={props.action}
           className="Button"
-          style={{ color: "white" }}
+          style={{ color: "white", fontSize: "1vw" }}
         >
           <img
             className=""
             src={ButtonLogo}
             alt="Present Screen"
             style={{ borderRadius: "10px" }}
-            width="45px"
-            //   height="30px"
+            width="70%"
           ></img>
           {props.Count}
         </button>

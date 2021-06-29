@@ -2,9 +2,10 @@
   background-color: rgb(0, 0, 0);
   background-image: url("https://i.pinimg.com/originals/d1/de/05/d1de05fd1cb0f0e30cd0024ba7986869.jpg");
   /* background-position: center; */
-  background-repeat: no-repeat;
+  /* background-repeat: no-repeat; */
   background-size: cover;
-  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
 }
 .App {
   /* text-align: center; */
@@ -66,7 +67,7 @@
   opacity: 55%;
   border-radius: 20px;
   position: absolute;
-  right: 10vw;
+  right: 3vw;
   background-image: none;
   color: #060b2d;
   text-decoration: none;
@@ -111,13 +112,15 @@
 }
 .button-container:hover .buttonText {
   visibility: visible;
+  font-size: 0.78vw;
 }
+
 .buttonText {
   color: white;
   visibility: hidden;
   /* position: relative; */
   /* bottom: 1vh; */
-  font-size: 1.6vh;
+  font-size: 0.78vw;
   margin: 0px;
   text-align: center;
 }
@@ -129,7 +132,7 @@
   bottom: 0px;
   /* left: 0px; */
   width: 100vw;
-  height: 9.2vh;
+  height: 5vw;
   position: fixed;
   margin: 0px;
   /* padding-left: 100px; */
@@ -140,7 +143,7 @@
 .Footer-elem {
   /* background-color: rgb(46, 46, 46); */
   float: left;
-  padding-left: 50px;
+  padding-left: 3vw;
   /* position: absolute; */
   /* bottom: 0px; */
   /* left: 30vw; */
@@ -162,7 +165,7 @@
 }
 
 .main__message_container > input {
-  height: 6vh;
+  height: 3vw;
   width: 20vw;
   right: 0.5vw;
   position: absolute;

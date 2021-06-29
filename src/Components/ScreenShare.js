@@ -23,8 +23,8 @@ const ScreenShare = (props) => {
             src={ButtonLogo}
             alt="Present Screen"
             style={{ borderRadius: "10px" }}
-            width="45px"
-            height="30px"
+            width="70%"
+            height="55%"
           ></img>
         </button>
       </div>

@@ -6,10 +6,10 @@ export const WebcamButton = (props) => {
   let ButtonLogo = null;
   let ButtonText = null;
   if (!props.Streaming) {
-    ButtonLogo = <img src={CamOff} alt="" width="40px" height="45px" />;
+    ButtonLogo = <img src={CamOff} alt="" width="55%" height="75%" />;
     ButtonText = <p className="buttonText">Camera On</p>;
   } else {
-    ButtonLogo = <img src={CamOn} alt="On" width="35px" height="40px" />;
+    ButtonLogo = <img src={CamOn} alt="On" width="55%" height="75%" />;
     ButtonText = <p className="buttonText">Camera Off</p>;
   }
 

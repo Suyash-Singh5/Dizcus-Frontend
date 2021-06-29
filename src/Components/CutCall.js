@@ -16,8 +16,8 @@ export const CutCall = (props) => {
               style={{ borderRadius: "100px" }}
               src={ButtonLogo}
               alt="Leave Call"
-              width="40px"
-              height="45px"
+              width="60%"
+              height="80%"
             />
           </button>
         </Link>

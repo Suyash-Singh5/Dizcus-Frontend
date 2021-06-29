@@ -1,71 +1,146 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import MicButton from "../Components/MicButton";
-import WebcamButton from "../Components/WebcamButton";
-import { Link } from "react-router-dom";
+import CamOn from "../Images/CamOn.png";
+import CamOff from "../Images/CamOff.png";
+import MicOn from "../Images/MicOn.png";
+import MicOff from "../Images/MicOff.png";
+import { Link, useRouteMatch } from "react-router-dom";
+
 const VideoBox = styled.video`
-  height: 45vh;
-  width: 60vh;
+  // height: 45vh;
+  width: 30vw;
   border: 1px solid blue;
   border-radius: 10px;
-  margin-top: 0px;
-  margin-bottom: 0px;
   margin-left: 20vw;
   margin-top: 20vh;
 `;
 
+const name = {
+  position: "absolute",
+  fontSize: "2vw",
+  top: "25vh",
+  left: "55vw",
+  width: "28vw",
+  backgroundColor: "rgba(255,0,255,0.3)",
+  color: "white",
+  border: "2px solid purple",
+  borderRadius: "10px",
+  textAlign: "center",
+  fontFamily: "times-new-roman",
+};
+
 const micstyle = {
   position: "absolute",
   left: "60vw",
-  top: "45vh",
+  marginTop: "40vh",
   color: "white",
+  border: "none",
 };
 
 const camstyle = {
   position: "absolute",
   left: "70vw",
-  top: "45vh",
+  marginTop: "40vh",
   color: "white",
+  border: "none",
 };
 
 const joinstyle = {
   position: "absolute",
   left: "65vw",
-  top: "55vh",
+  marginTop: "55vh",
   color: "white",
   backgroundColor: "green",
   width: "6vw",
   height: "3vw",
-  fontSize: "3vh",
+  fontSize: "1.5vw",
   borderRadius: "1vh",
 };
 
-const PreRoom = () => {
+const PreRoom = (props) => {
+  let match = useRouteMatch();
   const userVid = useRef();
+  const nameRef = useRef();
+  const [VideoStreaming, setVideoStreaming] = useState(true);
+  const [AudioStreaming, setAudioStreaming] = useState(true);
+  const [nameValue, setnameValue] = useState(null);
+  let camButton = null;
+  let micButton = null;
+
+  if (VideoStreaming) {
+    camButton = <img src={CamOn} alt="" width="55%" height="75%" />;
+  } else {
+    camButton = <img src={CamOff} alt="" width="55%" height="80%" />;
+  }
+  if (AudioStreaming) {
+    micButton = <img src={MicOn} alt="" width="55%" height="75%" />;
+  } else {
+    micButton = <img src={MicOff} alt="" width="55%" height="75%" />;
+  }
 
   useEffect(() => {
     dispVideoBox();
   }, []);
+
+  const toggleAudio = () => {
+    userVid.current.srcObject.getAudioTracks()[0].enabled =
+      !userVid.current.srcObject.getAudioTracks()[0].enabled;
+    setAudioStreaming(!AudioStreaming);
+  };
+
+  const toggleVideo = () => {
+    userVid.current.srcObject.getVideoTracks()[0].enabled =
+      !userVid.current.srcObject.getVideoTracks()[0].enabled;
+    setVideoStreaming(!VideoStreaming);
+  };
 
   const dispVideoBox = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         userVid.current.srcObject = stream;
+        userVid.current.srcObject.getVideoTracks()[0].enabled = VideoStreaming;
+        userVid.current.srcObject.getAudioTracks()[0].enabled = AudioStreaming;
       });
+  };
+
+  const handleJoin = () => {
+    userVid.current.srcObject.getAudioTracks()[0].stop();
+    userVid.current.srcObject.getVideoTracks()[0].stop();
+  };
+
+  const handleName = () => {
+    setnameValue(nameRef.current.value);
   };
 
   return (
     <div className="bg">
       <VideoBox ref={userVid} autoPlay playsInline />
-      <button style={micstyle} className="Button">
-        Mic
+      <input
+        ref={nameRef}
+        style={name}
+        placeholder="Enter your Name..."
+        onChange={handleName}
+      ></input>
+      <button style={micstyle} onClick={toggleAudio} className="Button">
+        {micButton}
       </button>
-      <button style={camstyle} className="Button">
-        Camera
+      <button style={camstyle} onClick={toggleVideo} className="Button">
+        {camButton}
       </button>
-      <Link to="./join">
-        <button style={joinstyle}>Join</button>
+      <Link
+        to={{
+          pathname: `${match.url}/join`,
+          state: {
+            video: VideoStreaming,
+            audio: AudioStreaming,
+            name: nameValue,
+          },
+        }}
+      >
+        <button style={joinstyle} onClick={handleJoin}>
+          Join
+        </button>
       </Link>
     </div>
   );

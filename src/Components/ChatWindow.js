@@ -7,7 +7,7 @@ export const ChatWindow = () => {
         id="chat_message"
         type="text"
         autoComplete="off"
-        placeholder="Type message here..."
+        placeholder="Chat with others ..."
       />
     </div>
   );

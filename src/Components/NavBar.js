@@ -14,9 +14,9 @@ const NavBar = () => {
             </div>
           </Link>
           <Link to="/">
-            <a className="navbar-brand">
+            <div className="navbar-brand">
               <img src={brand} className="App-brand" alt="brand" />
-            </a>
+            </div>
           </Link>
           <button
             className="navbar-toggler"
@@ -45,15 +45,16 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">
-                  Join Meeting
-                </a>
+                <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+                  <div>Join Meeting</div>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className="contact" aria-current="page" href="#">
-                  Contact Us
-                </a>
+                <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+                  <div className="contact">Contact Us</div>
+                </Link>
               </li>
+
               {/* <li className="nav-item">
                 <a className="nav-link" href="#">
                   Link

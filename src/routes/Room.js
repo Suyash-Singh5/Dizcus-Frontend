@@ -16,12 +16,6 @@ import image from "../Images/logo.png";
 //   flex-wrap: wrap;
 // `;
 
-let Banner = (
-  <div>
-    <img src={image} alt="Dizcus" />
-  </div>
-);
-
 const VideoBox = styled.video`
   height: 45vh;
   width: 60vh;
@@ -56,9 +50,11 @@ const Room = (props) => {
   const userVideo = useRef();
   const peersRef = useRef([]);
   const roomID = props.match.params.roomID;
+  const initstates = props.location.state;
   const [VideoStreaming, setVideoStreaming] = useState(false);
   const [AudioStreaming, setAudioStreaming] = useState(false);
   const [ScreenSharing, setScreenSharing] = useState(false);
+  let username = "Anonymous User";
 
   useEffect(() => {
     socketRef.current = io.connect("/");
@@ -77,9 +73,19 @@ const Room = (props) => {
     let initstream = video.srcObject;
     const videotrack = initstream.getVideoTracks()[0];
     const audiotrack = initstream.getAudioTracks()[0];
-    videotrack.enabled = !videotrack.enabled;
-    audiotrack.enabled = !audiotrack.enabled;
-    socketRef.current.emit("join room", roomID);
+    if (initstates) {
+      videotrack.enabled = initstates.video;
+      audiotrack.enabled = initstates.audio;
+      setVideoStreaming(initstates.video);
+      setAudioStreaming(initstates.audio);
+      if (initstates.name) {
+        username = initstates.name;
+      }
+    } else {
+      videotrack.enabled = false;
+      audiotrack.enabled = false;
+    }
+    socketRef.current.emit("join room", roomID, username);
     socketRef.current.on("all users", (users) => {
       const peers = [];
       users.forEach((userID) => {
@@ -188,7 +194,7 @@ const Room = (props) => {
       //   });
     } else {
       setVideoStreaming(false);
-      let video = userVideo.current;
+      // let video = userVideo.current;
       // let videotrack = video.srcObject.getVideoTracks();
       // videotrack.stop();
       // let videoTrack = video.srcObject.getVideoTracks()[0];
@@ -212,9 +218,9 @@ const Room = (props) => {
   };
 
   const toggleCutCall = () => {
+    userVideo.current.srcObject.getVideoTracks()[0].stop();
+    userVideo.current.srcObject.getAudioTracks()[0].stop();
     socketRef.current.emit("cut call");
-    userVideo.current.srcObject.getVideoTracks()[0].stop();
-    userVideo.current.srcObject.getVideoTracks()[0].stop();
     removeUser();
   };
 
