@@ -105,8 +105,12 @@ const PreRoom = (props) => {
   };
 
   const handleJoin = () => {
-    userVid.current.srcObject.getAudioTracks()[0].stop();
-    userVid.current.srcObject.getVideoTracks()[0].stop();
+    if (userVid.current.srcObject) {
+      userVid.current.srcObject.getAudioTracks()[0].stop();
+    }
+    if (userVid.current.srcObject) {
+      userVid.current.srcObject.getVideoTracks()[0].stop();
+    }
   };
 
   const handleName = () => {

@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
+import ChatOutput from "../Components/ChatOutput";
 import Footer from "../Components/Footer";
 import "../Room.css";
-// import image from "../Images/dizcus.png";
-import image from "../Images/logo.png";
+import AddParticipantPanel from "../Components/AddParticipantPanel";
+import AllParticipants from "../Components/AllParticipants";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { name } from "ejs";
 
 // const Container = styled.div`
 //   padding: 20px;
@@ -17,14 +20,8 @@ import image from "../Images/logo.png";
 // `;
 
 const VideoBox = styled.video`
-  height: 45vh;
-  width: 60vh;
   border: 1px solid blue;
   border-radius: 10px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  // margin-right: 5vw;
-  // margin-top: 2.5vh;
 `;
 
 const VideoPeer = (props) => {
@@ -36,33 +33,58 @@ const VideoPeer = (props) => {
     });
   }, []);
 
-  return <VideoBox playsInline autoPlay ref={ref} controls />;
+  return (
+    <VideoBox
+      style={{ height: `${props.height}vw`, width: `${props.width}vw` }}
+      playsInline
+      autoPlay
+      ref={ref}
+    />
+  );
 };
 
-// const videoConstraints = {
-//   height: window.innerHeight / 2,
-//   width: window.innerWidth / 2,
-// };
+const videoConstraints = {
+  height: 1080,
+  width: 1920,
+};
 
 const Room = (props) => {
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
   const userVideo = useRef();
   const peersRef = useRef([]);
+  const chatsLogRef = useRef([]);
+  const chatRef = useRef([]);
+  const ParticipantsLogRef = useRef([]);
+  const ParticipantsRef = useRef([]);
+  const AddParticipantRef = useRef([]);
+  const MaxScreenRef = useRef([]);
+  const MinScreenRef = useRef([]);
   const roomID = props.match.params.roomID;
   const initstates = props.location.state;
-  const [VideoStreaming, setVideoStreaming] = useState(false);
-  const [AudioStreaming, setAudioStreaming] = useState(false);
-  const [ScreenSharing, setScreenSharing] = useState(false);
+  const [VideoStreaming, setVideoStreaming] = useState(false); // Handles the state of Camera i.e On or Off
+  const [AudioStreaming, setAudioStreaming] = useState(false); // Handles the state of Mic i.e On or Off
+  const [ScreenSharing, setScreenSharing] = useState(false); // Handles the state of Screen Sharing mode i.e presenting or not
+  const [VideosRightMargin, setVideosRightMargin] = useState(2); // Responsible for changing Right margin of block of Videos
+  const [MiniVideoRightMargin, setMiniVideoRightMargin] = useState(8); // Responsible for changing Right margin of small video box in special case of 2 users
+  let count = peersRef.current.length + 1;
   let username = "Anonymous User";
-
+  const handle = useFullScreenHandle();
   useEffect(() => {
     socketRef.current = io.connect("/");
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
         addNewUser(stream);
-        // toggleVideo();
+        socketRef.current.on("recieve message", (message) => {
+          if (chatsLogRef.current) {
+            chatsLogRef.current.innerHTML += `
+              <p style={{maxWidth: "15vw"}}>
+                <b>${message.name}</b> :  ${message.message}
+              </p>`;
+          }
+        });
+
         removeUser();
       });
   }, []);
@@ -168,8 +190,6 @@ const Room = (props) => {
     return peer;
   };
 
-  let count = peersRef.current.length + 1;
-
   const toggleVideo = async () => {
     let video = userVideo.current;
     let stream = video.srcObject;
@@ -270,38 +290,203 @@ const Room = (props) => {
     }
   };
 
+  const toggleParticipants = () => {
+    if (ParticipantsRef.current.style.display === "none") {
+      if (chatRef.current.style.display === "block") {
+        chatRef.current.style.display = "none";
+      }
+      if (AddParticipantRef.current.style.display === "block") {
+        AddParticipantRef.current.style.display = "none";
+      }
+      ParticipantsRef.current.style.display = "block";
+      socketRef.current.emit("display users");
+      socketRef.current.on("all names", (names) => {
+        // console.log(names);
+        // return names;
+        if (ParticipantsLogRef.current) {
+          ParticipantsLogRef.current.innerHTML = null;
+          names.forEach((name) => {
+            ParticipantsLogRef.current.innerHTML += ` <p>${name}</p>`;
+            console.log(name);
+          });
+        }
+      });
+      setVideosRightMargin(18);
+      setMiniVideoRightMargin(0);
+    } else {
+      ParticipantsRef.current.style.display = "none";
+      setVideosRightMargin(2);
+      setMiniVideoRightMargin(8);
+    }
+  };
+
+  const toggleAddParticipants = () => {
+    if (chatRef.current.style.display === "block") {
+      chatRef.current.style.display = "none";
+    }
+    if (ParticipantsRef.current.style.display === "block") {
+      ParticipantsRef.current.style.display = "none";
+    }
+    if (AddParticipantRef.current.style.display === "none") {
+      AddParticipantRef.current.style.display = "block";
+      setVideosRightMargin(18);
+      setMiniVideoRightMargin(0);
+    } else {
+      AddParticipantRef.current.style.display = "none";
+      setVideosRightMargin(2);
+      setMiniVideoRightMargin(8);
+    }
+  };
+
+  const handleSendMessage = (message) => {
+    if (message) {
+      socketRef.current.emit("send message", message);
+      if (chatsLogRef.current) {
+        chatsLogRef.current.innerHTML += `
+        <p style={{maxWidth: "15vw"}>
+          <b>You</b> :  ${message}
+        </p>`;
+      }
+    }
+  };
+
+  const toggleChat = () => {
+    if (ParticipantsRef.current.style.display === "block") {
+      ParticipantsRef.current.style.display = "none";
+    }
+    if (AddParticipantRef.current.style.display === "block") {
+      AddParticipantRef.current.style.display = "none";
+    }
+    if (chatRef.current.style.display === "none") {
+      chatRef.current.style.display = "block";
+      setVideosRightMargin(18);
+      setMiniVideoRightMargin(0);
+    } else {
+      chatRef.current.style.display = "none";
+      setVideosRightMargin(2);
+      setMiniVideoRightMargin(8);
+    }
+    // console.log(peersRef.current);
+    // console.log(getName(peersRef.current[0].peerID));
+  };
+
+  const toggleFullScreen = () => {
+    if (MaxScreenRef.current.style.display === "none") {
+      MaxScreenRef.current.style.display = "inline-block";
+      MinScreenRef.current.style.display = "none";
+    } else {
+      MaxScreenRef.current.style.display = "none";
+      MinScreenRef.current.style.display = "inline-block";
+    }
+  };
+
+  // const getName = async (id,ref) => {
+  //   socketRef.current.emit("get name", id);
+  //   await socketRef.current.on("fetch name", (currentname) => {
+  //   });
+  //   return Tempname;
+  // };
+
+  /* This function returns the height, width and orientation of the
+   local user Video frame and also that of Peer video frame. 
+   An object is returned with the video parameters. */
+  const videoparams = (count) => {
+    let userheight,
+      userwidth,
+      peerheight,
+      peerwidth,
+      usertop,
+      userleft = 0;
+    let pos = "relative";
+    if (count === 1) {
+      userheight = 90 * 0.496;
+      userwidth = 79.2;
+      pos = "relative";
+      usertop = 0;
+      userleft = 0;
+    } else if (count === 2) {
+      peerheight = 88 * 0.496;
+      peerwidth = 77.44;
+      userheight = 20 * 0.496;
+      userwidth = 17.6;
+      usertop = 68 * 0.496;
+      userleft = 62 + MiniVideoRightMargin;
+      pos = "absolute";
+    } else if (count < 5 && count > 2) {
+      userheight = 88 * 0.5 * 0.496;
+      userwidth = 77.44 / 2;
+      peerheight = 88 * 0.5 * 0.496;
+      peerwidth = 77.44 / 2;
+      usertop = 0;
+      userleft = 0;
+      pos = "relative";
+    } else {
+      userheight = 88 * 0.33 * 0.496;
+      userwidth = 77.44 / 3;
+      peerheight = (88 / 3) * 0.496;
+      peerwidth = 77.44 / 3;
+    }
+    return {
+      userheight: userheight,
+      userwidth: userwidth,
+      peerheight: peerheight,
+      peerwidth: peerwidth,
+      usertop: usertop,
+      userleft: userleft,
+      userpos: pos,
+    };
+  };
   return (
-    <div className="bg">
-      {/* <div
-        style={{
-          width: "8vw",
-          height: "6vh",
-          // backgroundColor: "rgba(0,0,0,0.7)",
-          textAlign: "center",
-        }}
-      >
-        <img
-          src={image}
-          alt="Dizcus"
-          width="50%"
-          style={{ marginTop: "0.5vh" }}
-        />
-      </div> */}
-      <div>
+    <FullScreen handle={handle}>
+      <div className="bg">
         <div
           style={{
-            marginLeft: "10vw",
-            marginRight: "10vw",
-            marginTop: "0px",
-            marginBottom: "0px",
+            marginLeft: "0vw",
+            marginRight: `${VideosRightMargin}vw`,
+            marginTop: "1vh",
+            marginBottom: "4vw",
+            textAlign: "center",
             padding: "0px",
           }}
         >
-          <VideoBox ref={userVideo} autoPlay playsInline controls />
           {peers.map((peer) => {
-            return <VideoPeer key={peer.peerID} peer={peer.peer} controls />;
+            return (
+              <VideoPeer
+                height={videoparams(count).peerheight}
+                width={videoparams(count).peerwidth}
+                key={peer.peerID}
+                peer={peer.peer}
+              />
+            );
           })}
+          <VideoBox
+            style={{
+              position: `${videoparams(count).userpos}`,
+              height: `${videoparams(count).userheight}vw`,
+              // minHeight: `${videoparams(count).userheight * 0.5}vh`,
+              width: `${videoparams(count).userwidth}vw`,
+              // minWidth: `${videoparams(count).userwidth * 0.5}vh`,
+              top: `${videoparams(count).usertop}vw`,
+              left: `${videoparams(count).userleft}vw`,
+            }}
+            ref={userVideo}
+            autoPlay
+            playsInline
+          />
         </div>
+        <ChatOutput
+          chatRef={chatRef}
+          chatsLogRef={chatsLogRef}
+          action={handleSendMessage}
+        />
+        <AllParticipants
+          ParticipantsRef={ParticipantsRef}
+          ParticipantsLogRef={ParticipantsLogRef}
+        />
+        <AddParticipantPanel
+          roomID={roomID}
+          AddParticipantRef={AddParticipantRef}
+        />
         <Footer
           VideoStreaming={VideoStreaming}
           AudioStreaming={AudioStreaming}
@@ -310,10 +495,18 @@ const Room = (props) => {
           AudioAction={toggleAudio}
           CutCallAction={toggleCutCall}
           ScreenShareAction={toggleScreenShare}
+          ParticipantsAction={toggleParticipants}
+          AddParticipantAction={toggleAddParticipants}
+          ChatAction={toggleChat}
           Count={count}
+          FullScreenAction={toggleFullScreen}
+          MaxScreenRef={MaxScreenRef}
+          MinScreenRef={MinScreenRef}
+          handleFullScreen={handle.enter}
+          exitFullScreen={handle.exit}
         />
       </div>
-    </div>
+    </FullScreen>
   );
 };
 

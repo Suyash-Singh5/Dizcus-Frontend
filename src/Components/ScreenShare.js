@@ -12,7 +12,7 @@ const ScreenShare = (props) => {
       border: "0px",
     };
   }
-  let ButtonText = <p className="buttonText">Screen Share</p>;
+  let ButtonText = <p className="buttonText">Present</p>;
   return (
     <div>
       <div className="button-container">

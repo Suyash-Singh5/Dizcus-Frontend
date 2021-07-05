@@ -6,7 +6,7 @@ export const WebcamButton = (props) => {
   let ButtonLogo = null;
   let ButtonText = null;
   if (!props.Streaming) {
-    ButtonLogo = <img src={CamOff} alt="" width="55%" height="75%" />;
+    ButtonLogo = <img src={CamOff} alt="" width="55%" height="80%" />;
     ButtonText = <p className="buttonText">Camera On</p>;
   } else {
     ButtonLogo = <img src={CamOn} alt="On" width="55%" height="75%" />;
@@ -14,7 +14,7 @@ export const WebcamButton = (props) => {
   }
 
   return (
-    <div style={{ marginLeft: "15vw" }}>
+    <div style={{ marginLeft: "20vw" }}>
       <div className="button-container">
         {ButtonText}
         <button

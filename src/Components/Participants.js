@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import ButtonLogo from "../Images/people.png";
 
 const Participants = (props) => {
   let ButtonText = null;
   ButtonText = <p className="buttonText">Participants</p>;
+  // let names = props.action;
   return (
     <div>
       <div className="button-container">
@@ -16,11 +17,12 @@ const Participants = (props) => {
           <img
             className=""
             src={ButtonLogo}
-            alt="Present Screen"
+            alt="Participants"
             style={{ borderRadius: "10px" }}
             width="70%"
           ></img>
           {props.Count}
+          {/* {names} */}
         </button>
       </div>
     </div>

@@ -1,9 +1,20 @@
+* {
+  overflow-wrap: break-word;
+}
+
+.chatlog {
+  font-size: 2vh;
+  padding-left: 4vw;
+}
+
 .bg {
   background-color: rgb(0, 0, 0);
   background-image: url("https://i.pinimg.com/originals/d1/de/05/d1de05fd1cb0f0e30cd0024ba7986869.jpg");
   /* background-position: center; */
   /* background-repeat: no-repeat; */
   background-size: cover;
+  position: absolute;
+  top: 0px;
   min-height: 100vh;
   min-width: 100vw;
 }
@@ -97,9 +108,11 @@
   clear: both;
   cursor: pointer;
   /* margin-top: 20px; */
-  height: 3.3vw;
-  width: 4.5vw;
-  border-radius: 40px;
+  height: 2.7vw;
+  min-height: 5.4vh;
+  width: 3.6vw;
+  min-width: 7.2vh;
+  border-radius: 400px;
   border: 2px solid rgb(255, 255, 0);
   background-color: black;
   /* position: fixed; */
@@ -126,13 +139,14 @@
 }
 
 .Footer {
-  background-color: rgb(19, 18, 18);
+  background-color: rgba(19, 18, 18, 0.95);
   /* display: inline-block; */
   /* color: white; */
   bottom: 0px;
   /* left: 0px; */
   width: 100vw;
-  height: 5vw;
+  height: 4.5vw;
+  min-height: 9vh;
   position: fixed;
   margin: 0px;
   /* padding-left: 100px; */
@@ -143,7 +157,7 @@
 .Footer-elem {
   /* background-color: rgb(46, 46, 46); */
   float: left;
-  padding-left: 3vw;
+  padding-left: 2vw;
   /* position: absolute; */
   /* bottom: 0px; */
   /* left: 30vw; */
@@ -151,30 +165,63 @@
 
 .CutCall:hover {
   background-color: #ff0000;
-  border: 0px;
+  /* border: 2px solid red; */
   background-image: none;
 }
 
+/* .CutCall {
+  background-color: rgb(194, 3, 3);
+  border: 0px;
+} */
+
 .Present:hover {
   /* background-color: blue; */
-  border: 3px solid blue;
+  border: 0.15vw solid blue;
+}
+
+.chat {
+  position: absolute;
+  top: 1vh;
+  right: 0.5vw;
+  width: 18vw;
+  height: 90vh;
+  background-color: #27014754;
+  border-radius: 20px;
+  /* border: 0.1vw solid silver; */
+  color: white;
 }
 
 .main__message_container {
-  padding: 1rem;
+  /* right: 0.5vw; */
+  left: 0.5vw;
+  bottom: 1vh;
+  position: absolute;
+}
+
+.copyLogo:hover + .copyText {
+  display: inline-block;
+}
+
+.copyText {
+  display: none;
+}
+
+.copiedText {
+  display: none;
 }
 
 .main__message_container > input {
-  height: 3vw;
-  width: 20vw;
-  right: 0.5vw;
-  position: absolute;
+  height: 5vh;
+  width: 17vw;
   padding-left: 1vw;
-  border: 0.1vw solid wheat;
+  padding-right: 2vw;
+  /* border: 0.1vw solid silver; */
+  border: none;
   /* border: none; */
-  border-radius: 0.25vw;
-  background-color: rgba(35, 30, 82, 0.3);
+  border-radius: 0.5vw;
+  background-color: #1f013ace;
   color: white;
+  outline: none;
 }
 
 @keyframes App-logo-spin {
